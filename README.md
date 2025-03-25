@@ -32,9 +32,11 @@ Place your images in a directory. Update the `image_folder` variable in the scri
 
 **Run the Script:**
 
-    Execute the script to start clustering:
-    ```bash
-    python3 main.py
+Execute the script to start clustering:
+
+```
+python3 main.py
+```
     
 ## Review the Output:
 The script will output the clusters with each group containing paths to similar images.
