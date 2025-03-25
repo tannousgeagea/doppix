@@ -1,7 +1,9 @@
 import os
+from tqdm import tqdm
 from PIL import Image
 import imagehash
 import matplotlib.pyplot as plt
+from utils import transfer_images
 
 def compute_hash(image_path):
     """
@@ -27,7 +29,8 @@ def cluster_images(image_paths, threshold=5):
     """
     clusters = []
     
-    for path in image_paths:
+    pbar = tqdm(image_paths, ncols=150)
+    for path in pbar:
         img_hash = compute_hash(path)
         if img_hash is None:
             continue  # Skip images that failed to process
@@ -52,14 +55,18 @@ def cluster_images(image_paths, threshold=5):
     # Extract only the image lists from each cluster for easier use.
     return [cluster['images'] for cluster in clusters]
 
-def visualize_clusters(clusters, max_images_per_cluster=6):
+def visualize_clusters(clusters, max_images_per_cluster=6, output_dir="clusters"):
     """
     Visualize each cluster by displaying a few sample images.
     
     Parameters:
       clusters: List of clusters, each is a list of image paths.
       max_images_per_cluster: Maximum number of images to display per cluster.
+      output_dir: Directory to save the visualizations.
     """
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     for idx, cluster in enumerate(clusters):
         n_images = min(len(cluster), max_images_per_cluster)
         fig, axes = plt.subplots(1, n_images, figsize=(15, 5))
@@ -78,9 +85,15 @@ def visualize_clusters(clusters, max_images_per_cluster=6):
         plt.tight_layout()
         plt.show()
 
+        output_file = os.path.join(output_dir, f"cluster_{idx+1}.png")
+        plt.savefig(output_file)
+        print(f"Saved cluster visualization to: {output_file}")
+        plt.close(fig)
+        
+
 if __name__ == "__main__":
     # Replace with the path to your images folder
-    image_folder = "path_to_your_images"
+    image_folder = "/media/appuser"
     
     valid_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
     image_files = [
@@ -89,10 +102,11 @@ if __name__ == "__main__":
         if f.lower().endswith(valid_extensions)
     ]
     
-    clusters = cluster_images(image_files, threshold=5)
+    clusters = cluster_images(image_files, threshold=1)
     print(f"Found {len(clusters)} clusters.")
     
     # Visualize the clusters
-    visualize_clusters(clusters)
+    transfer_images(clusters, destination_folder="/media/appuser/archive")
+
 
 

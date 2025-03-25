@@ -66,6 +66,7 @@ RUN addgroup --gid $groupid $group && \
 
 # # # Create initial workspace 
 RUN mkdir -p /home/$user/src
+RUN mkdir -p /media/$user
 WORKDIR /home/$user/src
 
 COPY . .
@@ -75,6 +76,7 @@ ENV MPLCONFIGDIR=/tmp
 
 COPY ./entrypoint.sh /home/.
 RUN /bin/bash -c "chown -R $user:$user /home/$user/"
+RUN /bin/bash -c "chown -R $user:$user /media/$user"
 RUN /bin/bash -c "chown $user:$user /home/entrypoint.sh"
 
 ENTRYPOINT /bin/bash -c ". /home/entrypoint.sh"

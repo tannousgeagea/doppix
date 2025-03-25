@@ -2,7 +2,7 @@
 services:
   doppix:
     image: tannousgeagea/doppix:latest
-    container_name: doppic
+    container_name: doppix
     stdin_open: true # docker run -i
     tty: true        # docker run -t
     build:
@@ -19,6 +19,7 @@ services:
     working_dir: /home/$user/src
     volumes:
       - .:/home/$user/src
+      - /home/tannous/Documents/raw:/media/$user
     user: ${user}
 
 networks:
