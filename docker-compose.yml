@@ -19,7 +19,7 @@ services:
     working_dir: /home/$user/src
     volumes:
       - .:/home/$user/src
-      - /home/tannous/Documents/raw:/media/$user
+      - $MEDIA:/media/$user
     user: ${user}
 
 networks:

@@ -92,9 +92,13 @@ def visualize_clusters(clusters, max_images_per_cluster=6, output_dir="clusters"
         
 
 if __name__ == "__main__":
-    # Replace with the path to your images folder
     image_folder = "/media/appuser"
-    
+    visualize_flag = os.getenv("VISUALIZE_CLUSTER", "false").lower() in ["true", "1", "yes"]
+    transfer_flag = os.getenv("TRANSFER_IMAGES", "false").lower() in ["true", "1", "yes"]
+
+    if visualize_flag:
+        print(os.getenv("VISUALIZE_CLUSTER"))
+
     valid_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
     image_files = [
         os.path.join(image_folder, f)
@@ -106,7 +110,11 @@ if __name__ == "__main__":
     print(f"Found {len(clusters)} clusters.")
     
     # Visualize the clusters
-    transfer_images(clusters, destination_folder="/media/appuser/archive")
+    if visualize_flag:
+        visualize_clusters(clusters, max_images_per_cluster=6, output_dir="/media/appuser/clusters")
+    
+    if transfer_flag:
+        transfer_images(clusters, destination_folder="/media/appuser/archive")
 
 
 
