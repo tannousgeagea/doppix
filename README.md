@@ -34,7 +34,6 @@ Execute the script to start clustering:
 
     ```bash
     python3 main.py
-    ```
     
 ## Review the Output:
 The script will output the clusters with each group containing paths to similar images.
