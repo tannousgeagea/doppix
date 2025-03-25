@@ -26,13 +26,12 @@ Doppix is a lightweight tool for deduplicating and clustering images using conve
 
 ## Usage
 
-### Prepare Your Images:
+**Prepare Your Images:**
 Place your images in a directory. Update the `image_folder` variable in the script (e.g., `doppix.py`) to point to your images folder.
 
-### Run the Script:
-
-   Execute the script to start clustering:
-   ```bash
+**Run the Script:**
+    Execute the script to start clustering:
+    ```bash
     python3 main.py
     
 ## Review the Output:
