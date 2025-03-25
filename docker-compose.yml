@@ -1,0 +1,25 @@
+
+services:
+  doppix:
+    image: tannousgeagea/doppix:latest
+    container_name: doppic
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    build:
+      context: .
+      args:
+        user: ${user}
+        userid: ${userid}
+        group: ${group}
+        groupid: ${groupid}
+    networks:
+      - internal
+    env_file: .env
+    restart: unless-stopped
+    working_dir: /home/$user/src
+    volumes:
+      - .:/home/$user/src
+    user: ${user}
+
+networks:
+  internal:

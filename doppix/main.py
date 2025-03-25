@@ -1,0 +1,98 @@
+import os
+from PIL import Image
+import imagehash
+import matplotlib.pyplot as plt
+
+def compute_hash(image_path):
+    """
+    Compute the average hash for an image.
+    """
+    try:
+        with Image.open(image_path) as img:
+            return imagehash.average_hash(img)
+    except Exception as e:
+        print(f"Error processing {image_path}: {e}")
+        return None
+
+def cluster_images(image_paths, threshold=5):
+    """
+    Cluster images by comparing perceptual hashes.
+    
+    Parameters:
+    - image_paths: List of paths to images.
+    - threshold: Maximum Hamming distance for images to be considered similar.
+    
+    Returns:
+    - List of clusters, each cluster is a list of image paths.
+    """
+    clusters = []
+    
+    for path in image_paths:
+        img_hash = compute_hash(path)
+        if img_hash is None:
+            continue  # Skip images that failed to process
+        
+        # Flag to indicate if the image has been added to an existing cluster.
+        added = False
+        for cluster in clusters:
+            # Use the first image's hash in the cluster as its representative.
+            rep_hash = cluster['rep_hash']
+            if abs(img_hash - rep_hash) < threshold:
+                cluster['images'].append(path)
+                added = True
+                break
+        
+        # If image didn't match any existing cluster, create a new cluster.
+        if not added:
+            clusters.append({
+                'rep_hash': img_hash,
+                'images': [path]
+            })
+    
+    # Extract only the image lists from each cluster for easier use.
+    return [cluster['images'] for cluster in clusters]
+
+def visualize_clusters(clusters, max_images_per_cluster=6):
+    """
+    Visualize each cluster by displaying a few sample images.
+    
+    Parameters:
+      clusters: List of clusters, each is a list of image paths.
+      max_images_per_cluster: Maximum number of images to display per cluster.
+    """
+    for idx, cluster in enumerate(clusters):
+        n_images = min(len(cluster), max_images_per_cluster)
+        fig, axes = plt.subplots(1, n_images, figsize=(15, 5))
+        fig.suptitle(f'Cluster {idx + 1} ({len(cluster)} images)', fontsize=16)
+        if n_images == 1:
+            axes = [axes]  # Ensure axes is iterable even for a single subplot
+        
+        for ax, image_path in zip(axes, cluster[:n_images]):
+            try:
+                img = Image.open(image_path)
+                ax.imshow(img)
+                ax.set_title(os.path.basename(image_path), fontsize=8)
+                ax.axis('off')
+            except Exception as e:
+                print(f"Error loading image {image_path}: {e}")
+        plt.tight_layout()
+        plt.show()
+
+if __name__ == "__main__":
+    # Replace with the path to your images folder
+    image_folder = "path_to_your_images"
+    
+    valid_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
+    image_files = [
+        os.path.join(image_folder, f)
+        for f in os.listdir(image_folder)
+        if f.lower().endswith(valid_extensions)
+    ]
+    
+    clusters = cluster_images(image_files, threshold=5)
+    print(f"Found {len(clusters)} clusters.")
+    
+    # Visualize the clusters
+    visualize_clusters(clusters)
+
+
